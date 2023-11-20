@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: skyblue;
+            background-image: url('https://www.wallpaperup.com/uploads/wallpapers/2015/05/30/704137/12ddbcb10182b1a98b05939fbca56768.jpg');
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+            color: #FFFFFF;     
+        }
+
+        header {
+            background-color: gray;
+            padding: 10px;
+        }
+
+        #image-container {
+            margin-top: 20px;
+        }
+
+        #story-image {
+            max-width: 100%;
+            max-height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+        .addendum-box {
+    border: 2px solid #000000; /* Border style */
+    padding: 10px; /* Padding inside the box */
+    margin-top: 20px; /* Adjust margin as needed */
+    background-color: black; /* Background color */
+    width: 250px; /* Set width */
+    max-height: 150px; /* Set maximum height */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+}
+
+        .addendum-box ul {
+    list-style-type: none; /* Remove bullet points */
+    padding-left: 0; /* Remove default padding */
+}
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer-box {
+            border: 2px solid #000; /* Border style */
+            padding: 10px; /* Padding inside the box */
+            background-color: black; /* Background color */
+            width: 250px; /* Set width */
+        }
+
+        .footer-box p {
+            color: black; /* Font color */
+            font-family: Arial, sans-serif; /* Font family */
+        }
+    </style>
+    <title>Adventure Game</title>
+</head>
+<body>
+
+    <header>
+        <h1>Adventure Game</h1>
+    </header>
+    <div id="story"></div>
+    <div id="choices"></div>
+    <div id="image-container">
+        <img id="story-image" src="" alt="">
+    </div>
+    <button id="startButton" onclick="startGame()">Start</button>
+    <footer>
+        <div>
+            <p>This Adventure Game is a work of fiction created for entertainment purposes only.</p>
+            <p>All images, animations, and characters used in this game are either original creations or used for illustrative purposes.</p>
+            <p>The flow of the game is intact and checked for all the image visibility</p>
+        </div>
+    </footer>
+    <script>
+        const storyContainer = document.getElementById('story');
+        const choicesContainer = document.getElementById('choices');
+        const imageContainer = document.getElementById('image-container');
+        const storyImage = document.getElementById('story-image');
+
+        let currentStage = null;
+        let player = {
+            health: 100,
+            gold: 0
+        };
+        const story = {
+            start: {
+                text: "Welcome to the Adventure Game! You find yourself in a magical land. What do you want to do?",
+                choices: [
+                    { text: "Explore the forest", consequence: "forestExplore" },
+                    { text: "Visit the village", consequence: "visitVillage" },
+                    { text: "Rest by the river", consequence: "restByRiver" }
+                ],
+                image: "wolf.jpg"
+            },
+            
+            forestExplore: {
+                text: "While exploring the forest, you encounter a pack of wolves. What will you do?",
+                choices: [
+                    { text: "Fight the wolves", consequence: "fightWolves" },
+                    { text: "Try to run away", consequence: "runAwayFromWolves" }
+                ],
+                image: "https://media.giphy.com/media/3o6ZthGQkS0d3NoIfC/giphy.gif"
+            },
+            fightWolves: {
+                text: "You decide to fight the wolves. It's a tough battle, but you manage to defeat them.",
+                choices: [],
+                image: "https://media.giphy.com/media/3oKIPsdEevZg8jcXh6/giphy.gif"
+            },
+            runAwayFromWolves: {
+                text: "You attempt to run away, but the wolves catch up. They take a bite, and you lose some health.",
+                choices: [],
+                image: "https://media.giphy.com/media/3o6Zth9W79RNMUsGyI/giphy.gif",
+                consequence: function () {
+                    player.health -= 20;
+                }
+            },
+            visitVillage: {
+                text: "You arrive at a peaceful village. The villagers offer to sell you a magic potion. What will you do?",
+                choices: [
+                    { text: "Buy the potion", consequence: "buyPotion" },
+                    { text: "Decline and keep exploring", consequence: "keepExploring" }
+                ],
+                image: "https://media.giphy.com/media/U3g5x0DAM15r2/giphy.gif"
+            },
+            buyPotion: {
+                text: "You buy the magic potion, and the villagers thank you. The potion restores some of your health.",
+                choices: [],
+                image: "https://media.giphy.com/media/3ov9jYUDrAqgNOtIA4/giphy.gif",
+                consequence: function () {
+                    player.health += 30;
+                }
+            },
+            keepExploring: {
+                text: "You decide to decline and continue exploring the surrounding areas.",
+                choices: [],
+                image: "https://media.giphy.com/media/mk1Bo1LpHOdBu/giphy.gif"
+            },
+            restByRiver: {
+                text: "You find a peaceful spot by the river. What would you like to do?",
+                choices: [
+                    { text: "Rest and regain health", consequence: "restAndRegainHealth" },
+                    { text: "Skip resting and continue the journey", consequence: "skipResting" }
+                ],
+                image: "https://media.giphy.com/media/3o7TKDCM0oXuA1UCAE/giphy.gif"
+            },
+            restAndRegainHealth: {
+                text: "You rest by the river, and your health improves. A passing merchant rewards you with gold for a good deed.",
+                choices: [],
+                image: "https://media.giphy.com/media/3o7TKDCM0oXuA1UCAE/giphy.gif",
+                consequence: function () {
+                    player.health += 20;
+                    player.gold += 50;
+                }
+            },
+            skipResting: {
+                text: "You decide to skip resting and continue your journey. Be careful not to exhaust yourself!",
+                choices: [],
+                image: "https://media.giphy.com/media/3o7TKDCM0oXuA1UCAE/giphy.gif"
+            }
+        };
+
+        function startGame() {
+            currentStage = "start";
+            player = {
+                health: 100,
+                gold: 0
+            };
+            updatePage();
+            document.getElementById('startButton').style.display = 'none';
+        }
+
+        function restartGame() {
+            startGame();
+            document.getElementById('restartButton').style.display = 'none';
+        }
+
+        function updatePage() {
+            const stage = story[currentStage];
+            storyContainer.innerHTML = `<p>Health: ${player.health} | Gold: ${player.gold}</p><p>${stage.text}</p>`;
+            
+            if (stage.image) {
+                imageContainer.style.display = "block";
+                storyImage.src = stage.image;
+            } else {
+                imageContainer.style.display = "none";
+            }
+
+            choicesContainer.innerHTML = "";
+            if (stage.choices.length > 0) {
+                stage.choices.forEach((choice, index) => {
+                    const choiceButton = document.createElement('button');
+                    choiceButton.textContent = choice.text;
+                    choiceButton.addEventListener('click', () => makeChoice(index));
+                    choicesContainer.appendChild(choiceButton);
+                });
+            }
+
+            if (stage.consequence) {
+                stage.consequence();
+            }
+
+            if (player.health <= 0) {
+                gameOver("You have run out of health! Game Over.");
+            } else {
+                if (stage.choices.length === 0) {
+                    gameOver("Congratulations! You've completed your adventure!");
+                }
+            }
+        }
+
+        function makeChoice(choiceIndex) {
+            const chosenChoice = story[currentStage].choices[choiceIndex];
+            currentStage = chosenChoice.consequence;
+            updatePage();
+        }
+
+        function gameOver(message) {
+            storyContainer.innerHTML = `<p>${message}</p>`;
+            choicesContainer.innerHTML = "<button onclick='restartGame()'>Restart</button>";
+            imageContainer.style.display = "none";
+            document.getElementById('restartButton').style.display = 'block';
+        }
+
+        startGame();
+        
+    </script>
+</body>
+<footer>
+    <div>
+    <div class="addendum-box">
+        <p>Addendum:</p>
+        <div>
+            <p>This Adventure Game is a work of fiction created for entertainment purposes only.</p>
+            <p>All images, animations, and characters used in this game are either original creations or used for illustrative purposes.</p>
+            <p>The flow of the game is intact and checked for all the image visibility</p>
+        </div>
+        <ul>
+            <li>You stumble upon a hidden treasure, gaining immense wealth and retiring peacefully.</li>
+            <li>A mysterious portal appears, transporting you to another dimension.</li>
+            <li>You encounter a wise sage who reveals the secret of eternal life.</li>
+            <li>The land is engulfed in chaos as a dragon awakens, leading to an epic battle.</li>
+            <li>You discover a forgotten artifact, granting unimaginable powers.</li>
+            <li>Time collapses, and you find yourself back at the start, destined to relive the adventure.</li>
+            <li>An ancient curse befalls you, trapping you in a perpetual loop of the same day.</li>
+            <li>The adventure ends, but whispers speak of a sequel, hinting at new quests and challenges.</li>
+        </ul>
+    </div>
+    </div>
+</footer>
+</html>
